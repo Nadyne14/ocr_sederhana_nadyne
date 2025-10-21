@@ -1,6 +1,6 @@
 # ocr_sederhana_nadyne
 
-# Laporan JS7 & UTS APLIKASI OCR SEDERHANA
+# Laporan UTS APLIKASI OCR SEDERHANA
 **Nama:** Nadyne Rosalia Noer Azizah  
 **NIM:** 2341760142  
 **Kelas:** SIB-3F   
@@ -67,7 +67,7 @@ Menampilkan hasil OCR secara akurat di layar hasil.
 ![Screenshoot](assets/ss03.jpeg)
 
 ## Commit
-![Screenshoot](assets/CommitGithub.png)
+![Screenshoot](assets/CommitGitHub.png)
 
 ## Kesimpulan:
 
