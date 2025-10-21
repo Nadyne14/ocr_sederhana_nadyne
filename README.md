@@ -1,6 +1,6 @@
 # ocr_sederhana_nadyne
 
-# Laporan JS7 & UTS APLIKASI OCR SEDERHANA DENGAN FLUTTER
+# Laporan JS7 & UTS APLIKASI OCR SEDERHANA
 **Nama:** Nadyne Rosalia Noer Azizah  
 **NIM:** 2341760142  
 **Kelas:** SIB-3F   
