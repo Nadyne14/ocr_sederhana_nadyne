@@ -14,20 +14,46 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
+  CameraController? _controller;
+  Future<void>? _initializeControllerFuture;
 
   @override
   void initState() {
     super.initState();
+    _initCamera();
+  }
+
+  /// 🔹 Fungsi untuk inisialisasi kamera
+  void _initCamera() async {
+    try {
+      print('📸 Inisialisasi kamera...');
+      cameras = await availableCameras();
+      print('✅ Kamera ditemukan: ${cameras.length}');
+
+      _controller = CameraController(cameras[0], ResolutionPreset.medium);
+
+      _initializeControllerFuture = _controller!.initialize();
+      await _initializeControllerFuture;
+
+      print('✅ Kamera siap digunakan!');
+      if (mounted) setState(() {});
+    } catch (e) {
+      print('❌ Gagal menginisialisasi kamera: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengakses kamera. Periksa izin atau coba lagi.'),
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
-    super.dispose(); 
+    _controller?.dispose();
+    super.dispose();
   }
 
+  /// 🔹 Proses OCR dari gambar
   Future<String> _ocrFromFile(File imageFile) async {
     final inputImage = InputImage.fromFile(imageFile);
     final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
@@ -36,11 +62,12 @@ class _ScanScreenState extends State<ScanScreen> {
     return recognizedText.text;
   }
 
+  /// 🔹 Ambil foto dan pindai teks
   Future<void> _takePicture() async {
     try {
       await _initializeControllerFuture;
 
-      final image = await _controller.takePicture();
+      final image = await _controller!.takePicture();
       final ocrText = await _ocrFromFile(File(image.path));
 
       if (!mounted) return;
@@ -60,7 +87,8 @@ class _ScanScreenState extends State<ScanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
+    // 🔹 Jika kamera belum siap, tampilkan loading elegan
+    if (_controller == null || !_controller!.value.isInitialized) {
       return Scaffold(
         backgroundColor: Colors.grey[900],
         body: Center(
@@ -79,14 +107,15 @@ class _ScanScreenState extends State<ScanScreen> {
       );
     }
 
+    // 🔹 Jika kamera siap, tampilkan preview
     return Scaffold(
       appBar: AppBar(title: const Text('Kamera OCR')),
       body: Column(
         children: [
           Expanded(
             child: AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: CameraPreview(_controller),
+              aspectRatio: _controller!.value.aspectRatio,
+              child: CameraPreview(_controller!),
             ),
           ),
           Padding(
