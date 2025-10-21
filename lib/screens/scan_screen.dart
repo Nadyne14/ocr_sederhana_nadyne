@@ -20,27 +20,12 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   void initState() {
     super.initState();
-    _initCamera();
-  }
-
-  // ✅ Fungsi inisialisasi kamera dengan log proses
-  void _initCamera() async {
-    print('📸 Inisialisasi kamera...');
-    cameras = await availableCameras();
-    print('✅ Kamera ditemukan: ${cameras.length}');
-    _controller = CameraController(cameras[0], ResolutionPreset.medium);
-
-    _initializeControllerFuture = _controller.initialize();
-    await _initializeControllerFuture;
-
-    print('✅ Kamera siap digunakan!');
-    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    super.dispose();
+    super.dispose(); 
   }
 
   Future<String> _ocrFromFile(File imageFile) async {
@@ -64,8 +49,11 @@ class _ScanScreenState extends State<ScanScreen> {
         MaterialPageRoute(builder: (_) => ResultScreen(ocrText: ocrText)),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: $e')),
+        const SnackBar(
+          content: Text('Pemindaian Gagal! Periksa Izin Kamera atau coba lagi.'),
+        ),
       );
     }
   }
@@ -73,8 +61,21 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     if (!_controller.value.isInitialized) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: Colors.grey[900],
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              CircularProgressIndicator(color: Colors.yellow),
+              SizedBox(height: 16),
+              Text(
+                'Memuat Kamera... Harap tunggu.',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
